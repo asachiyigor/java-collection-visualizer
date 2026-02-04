@@ -21,6 +21,7 @@ public class GameWindow extends JFrame {
     private VisualHashtable hashtable;
     private VisualPriorityQueue priorityQueue;
     private VisualConcurrentHashMap concurrentHashMap;
+    private BenchmarkModel benchmarkModel;
 
     private JPanel mainContainer;
     private CardLayout cardLayout;
@@ -45,6 +46,7 @@ public class GameWindow extends JFrame {
         this.hashtable = new VisualHashtable();
         this.priorityQueue = new VisualPriorityQueue();
         this.concurrentHashMap = new VisualConcurrentHashMap();
+        this.benchmarkModel = new BenchmarkModel();
 
         initUI();
 
@@ -82,6 +84,9 @@ public class GameWindow extends JFrame {
         mainContainer.add(wrapInScrollPane(new HashtablePanel(hashtable)), "HASHTABLE");
         mainContainer.add(wrapInScrollPane(new ConcurrentHashMapPanel(concurrentHashMap)), "CONCURRENTHASHMAP");
 
+        BenchmarkPanel benchmarkPanel = new BenchmarkPanel(benchmarkModel);
+        mainContainer.add(wrapInScrollPane(benchmarkPanel), "BENCHMARK");
+
         add(mainContainer, BorderLayout.CENTER);
 
         controlCardLayout = new CardLayout();
@@ -100,6 +105,7 @@ public class GameWindow extends JFrame {
         controlContainer.add(new TreeMapControlPanel(treeMap), "TREEMAP");
         controlContainer.add(new HashtableControlPanel(hashtable), "HASHTABLE");
         controlContainer.add(new ConcurrentHashMapControlPanel(concurrentHashMap), "CONCURRENTHASHMAP");
+        controlContainer.add(new BenchmarkControlPanel(benchmarkModel, benchmarkPanel), "BENCHMARK");
 
         JScrollPane controlScrollPane = new JScrollPane(controlContainer);
         controlScrollPane.setBorder(null);
@@ -162,6 +168,10 @@ public class GameWindow extends JFrame {
         // Concurrent
         JButton concurrentHashMapBtn = createTabButton("CncHashMap", new Color(100, 150, 220), false);
 
+        // Benchmark
+        JButton benchmarkBtn = createTabButton("Benchmark", new Color(240, 200, 40), false);
+        benchmarkBtn.setPreferredSize(new Dimension(88, 28));
+
         tabButtons.add(arrayListBtn);
         tabButtons.add(linkedListBtn);
         tabButtons.add(arrayBtn);
@@ -175,6 +185,7 @@ public class GameWindow extends JFrame {
         tabButtons.add(treeMapBtn);
         tabButtons.add(hashtableBtn);
         tabButtons.add(concurrentHashMapBtn);
+        tabButtons.add(benchmarkBtn);
 
         arrayListBtn.addActionListener(e -> switchTo("ARRAYLIST", arrayListBtn));
         linkedListBtn.addActionListener(e -> switchTo("LINKEDLIST", linkedListBtn));
@@ -189,6 +200,7 @@ public class GameWindow extends JFrame {
         treeMapBtn.addActionListener(e -> switchTo("TREEMAP", treeMapBtn));
         hashtableBtn.addActionListener(e -> switchTo("HASHTABLE", hashtableBtn));
         concurrentHashMapBtn.addActionListener(e -> switchTo("CONCURRENTHASHMAP", concurrentHashMapBtn));
+        benchmarkBtn.addActionListener(e -> switchTo("BENCHMARK", benchmarkBtn));
 
         // Category labels
         JLabel listLabel = createCategoryLabel("LIST:");
@@ -225,6 +237,10 @@ public class GameWindow extends JFrame {
         header.add(Box.createHorizontalStrut(4));
         header.add(concLabel);
         header.add(concurrentHashMapBtn);
+        header.add(Box.createHorizontalStrut(4));
+        JLabel benchLabel = createCategoryLabel("BENCH:");
+        header.add(benchLabel);
+        header.add(benchmarkBtn);
         header.add(Box.createHorizontalStrut(8));
 
         // Theme toggle button
