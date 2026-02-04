@@ -5,16 +5,17 @@ import game.model.VisualHashSet;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import game.ui.ThemeManager;
 
 public class HashSetMemoryDialog extends JDialog {
     private VisualHashSet hashSet;
     private Timer animationTimer;
     private double glowPhase = 0;
 
-    private static final Color BG_COLOR = new Color(20, 15, 10);
-    private static final Color PANEL_BG = new Color(35, 28, 18);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(255, 150, 80);
-    private static final Color TEXT_COLOR = new Color(255, 230, 200);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public HashSetMemoryDialog(Frame parent, VisualHashSet hashSet) {
         super(parent, "HashSet Memory Analysis", true);

@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class HashtablePanel extends JPanel {
     private VisualHashtable hashtable;
@@ -17,10 +18,10 @@ public class HashtablePanel extends JPanel {
     private long lastTime;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(20, 14, 10);
-    private static final Color GRID_COLOR = new Color(45, 35, 28);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color ACCENT = new Color(200, 120, 80);
-    private static final Color TEXT_COLOR = new Color(255, 230, 210);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color KEY_COLOR = new Color(255, 180, 120);
     private static final Color VALUE_COLOR = new Color(180, 220, 255);
 

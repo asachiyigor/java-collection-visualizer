@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class TreeSetPanel extends JPanel {
     private VisualTreeSet treeSet;
@@ -16,10 +17,10 @@ public class TreeSetPanel extends JPanel {
     private long lastTime;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(12, 22, 22);
-    private static final Color GRID_COLOR = new Color(30, 50, 50);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color ACCENT = new Color(80, 200, 200);
-    private static final Color TEXT_COLOR = new Color(200, 240, 240);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color RED_NODE = new Color(255, 80, 80);
     private static final Color BLACK_NODE = new Color(60, 60, 60);
 

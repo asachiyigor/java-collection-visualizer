@@ -5,14 +5,15 @@ import game.model.VisualTreeSet;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import game.ui.ThemeManager;
 
 public class TreeSetMemoryDialog extends JDialog {
     private VisualTreeSet treeSet;
 
-    private static final Color BG_COLOR = new Color(10, 18, 18);
-    private static final Color PANEL_BG = new Color(22, 35, 35);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(80, 200, 200);
-    private static final Color TEXT_COLOR = new Color(200, 240, 240);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public TreeSetMemoryDialog(Frame parent, VisualTreeSet treeSet) {
         super(parent, "TreeSet Memory Analysis", true);

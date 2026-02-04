@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class LinkedListPanel extends JPanel {
     private VisualLinkedList linkedList;
@@ -14,10 +15,10 @@ public class LinkedListPanel extends JPanel {
     private double glowPhase = 0;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(10, 15, 25);
-    private static final Color GRID_COLOR = new Color(30, 40, 60);
-    private static final Color EMPTY_CELL = new Color(20, 30, 45);
-    private static final Color TEXT_COLOR = new Color(200, 220, 255);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
+    private static Color EMPTY_CELL = ThemeManager.get().getEmptyCellColor();
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color ACCENT_COLOR = new Color(255, 100, 150);
     private static final Color LINK_COLOR = new Color(255, 200, 100);
 

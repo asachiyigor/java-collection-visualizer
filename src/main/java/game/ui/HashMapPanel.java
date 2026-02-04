@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class HashMapPanel extends JPanel {
     private VisualHashMap hashMap;
@@ -16,10 +17,10 @@ public class HashMapPanel extends JPanel {
     private long lastTime;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(25, 20, 10);
-    private static final Color GRID_COLOR = new Color(50, 45, 25);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color ACCENT = new Color(255, 200, 80);
-    private static final Color TEXT_COLOR = new Color(255, 245, 220);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public HashMapPanel(VisualHashMap hashMap) {
         this.hashMap = hashMap;

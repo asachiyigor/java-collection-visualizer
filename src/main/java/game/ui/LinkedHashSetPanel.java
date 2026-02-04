@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class LinkedHashSetPanel extends JPanel {
     private VisualLinkedHashSet linkedHashSet;
@@ -17,10 +18,10 @@ public class LinkedHashSetPanel extends JPanel {
     private long lastTime;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(25, 15, 18);
-    private static final Color GRID_COLOR = new Color(50, 35, 40);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color ACCENT = new Color(255, 120, 120);
-    private static final Color TEXT_COLOR = new Color(255, 220, 225);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color ORDER_COLOR = new Color(255, 180, 100);
 
     public LinkedHashSetPanel(VisualLinkedHashSet linkedHashSet) {

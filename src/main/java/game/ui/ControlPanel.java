@@ -9,6 +9,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import game.ui.ThemeManager;
 
 public class ControlPanel extends JPanel {
     private VisualArrayList arrayList;
@@ -18,14 +19,15 @@ public class ControlPanel extends JPanel {
     private JComboBox<String> typeCombo;
     private JLabel statusLabel;
     private JTextField capacityField;
+    private Timer animationTimer;
 
-    private static final Color BG_COLOR = new Color(15, 20, 30);
-    private static final Color PANEL_BG = new Color(25, 35, 50);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(0, 200, 255);
-    private static final Color TEXT_COLOR = new Color(200, 220, 255);
-    private static final Color BUTTON_BG = new Color(35, 50, 70);
-    private static final Color WARN_COLOR = new Color(255, 200, 100);
-    private static final Color SUCCESS_COLOR = new Color(100, 255, 150);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
+    private static Color BUTTON_BG = ThemeManager.get().getButtonBg();
+    private static Color WARN_COLOR = ThemeManager.get().getWarnColor();
+    private static Color SUCCESS_COLOR = ThemeManager.get().getSuccessColor();
 
     public ControlPanel(VisualArrayList arrayList) {
         this.arrayList = arrayList;
@@ -35,6 +37,7 @@ public class ControlPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         initComponents();
+        ThemeManager.get().addListener(() -> { updateThemeColors(); repaint(); });
     }
 
     private void initComponents() {
@@ -426,6 +429,39 @@ public class ControlPanel extends JPanel {
         add(autoPanel);
         add(Box.createVerticalStrut(10));
 
+        // Algorithms Section
+        add(createTitle("ALGORITHMS"));
+        add(Box.createVerticalStrut(4));
+
+        JButton sortBtn = createStyledButton("Sort (Bubble)", new Color(255, 180, 50));
+        sortBtn.addActionListener(e -> startSortAnimation());
+        add(sortBtn);
+        add(Box.createVerticalStrut(4));
+
+        JPanel searchPanel2 = new JPanel(new GridLayout(1, 2, 4, 0));
+        searchPanel2.setBackground(BG_COLOR);
+        searchPanel2.setMaximumSize(new Dimension(230, 28));
+        searchPanel2.setAlignmentX(LEFT_ALIGNMENT);
+
+        JButton linearBtn = createSmallButton("Linear Search", new Color(100, 200, 255));
+        linearBtn.addActionListener(e -> startLinearSearch());
+        searchPanel2.add(linearBtn);
+
+        JButton binaryBtn = createSmallButton("Binary Search", new Color(100, 255, 200));
+        binaryBtn.addActionListener(e -> startBinarySearch());
+        searchPanel2.add(binaryBtn);
+        add(searchPanel2);
+        add(Box.createVerticalStrut(4));
+
+        JButton stopAnimBtn = createStyledButton("Stop Animation", new Color(255, 80, 80));
+        stopAnimBtn.addActionListener(e -> {
+            if (animationTimer != null) animationTimer.stop();
+            arrayList.stopAnimation();
+            updateStatus("Animation stopped", WARN_COLOR);
+        });
+        add(stopAnimBtn);
+        add(Box.createVerticalStrut(10));
+
         // Status label
         statusLabel = new JLabel(" ");
         statusLabel.setFont(new Font("Consolas", Font.PLAIN, 12));
@@ -668,6 +704,72 @@ public class ControlPanel extends JPanel {
         return button;
     }
 
+    private void startSortAnimation() {
+        if (arrayList.isAnimating()) {
+            updateStatus("Animation in progress!", WARN_COLOR);
+            return;
+        }
+        if (arrayList.getSize() < 2) {
+            updateStatus("Need 2+ elements to sort", WARN_COLOR);
+            return;
+        }
+        var steps = arrayList.generateBubbleSortSteps();
+        if (steps.isEmpty()) {
+            updateStatus("Cannot sort (non-comparable)", new Color(255, 100, 100));
+            return;
+        }
+        arrayList.startAnimation(steps);
+        updateStatus("Bubble Sort: " + steps.size() + " steps", SUCCESS_COLOR);
+        runAnimationTimer();
+    }
+
+    private void startLinearSearch() {
+        if (arrayList.isAnimating()) {
+            updateStatus("Animation in progress!", WARN_COLOR);
+            return;
+        }
+        String val = valueField.getText().trim();
+        if (val.isEmpty()) {
+            updateStatus("Enter value to search!", WARN_COLOR);
+            return;
+        }
+        var steps = arrayList.generateLinearSearchSteps(val);
+        arrayList.startAnimation(steps);
+        updateStatus("Linear Search for: " + val, SUCCESS_COLOR);
+        runAnimationTimer();
+    }
+
+    private void startBinarySearch() {
+        if (arrayList.isAnimating()) {
+            updateStatus("Animation in progress!", WARN_COLOR);
+            return;
+        }
+        String val = valueField.getText().trim();
+        if (val.isEmpty()) {
+            updateStatus("Enter value to search!", WARN_COLOR);
+            return;
+        }
+        var steps = arrayList.generateBinarySearchSteps(val);
+        if (steps.isEmpty()) {
+            updateStatus("Binary search: integers only", WARN_COLOR);
+            return;
+        }
+        arrayList.startAnimation(steps);
+        updateStatus("Binary Search for: " + val, SUCCESS_COLOR);
+        runAnimationTimer();
+    }
+
+    private void runAnimationTimer() {
+        if (animationTimer != null) animationTimer.stop();
+        animationTimer = new Timer(400, evt -> {
+            if (!arrayList.advanceAnimation()) {
+                animationTimer.stop();
+                updateStatus("Animation complete", SUCCESS_COLOR);
+            }
+        });
+        animationTimer.start();
+    }
+
     private JPanel createInfoPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -702,5 +804,13 @@ public class ControlPanel extends JPanel {
         }
 
         return panel;
+    }
+
+    private void updateThemeColors() {
+        BG_COLOR = ThemeManager.get().getBgColor();
+        TEXT_COLOR = ThemeManager.get().getTextColor();
+        PANEL_BG = ThemeManager.get().getPanelBg();
+        BUTTON_BG = ThemeManager.get().getButtonBg();
+        setBackground(BG_COLOR);
     }
 }

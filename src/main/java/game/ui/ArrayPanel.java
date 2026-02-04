@@ -1,6 +1,8 @@
 package game.ui;
 
 import game.model.VisualArrayList;
+import game.model.VisualArrayList.AnimationState;
+import game.model.VisualArrayList.AnimationStep;
 import game.model.VisualElement;
 
 import javax.swing.*;
@@ -8,6 +10,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.util.List;
+import java.util.Map;
+import game.ui.ThemeManager;
 
 public class ArrayPanel extends JPanel {
     private VisualArrayList arrayList;
@@ -16,12 +20,12 @@ public class ArrayPanel extends JPanel {
     private Rectangle memoryPanelBounds = new Rectangle();
 
     // Colors
-    private static final Color BG_COLOR = new Color(10, 15, 25);
-    private static final Color GRID_COLOR = new Color(30, 40, 60);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color GRID_GLOW = new Color(40, 60, 100);
-    private static final Color EMPTY_CELL = new Color(20, 30, 45);
+    private static Color EMPTY_CELL = ThemeManager.get().getEmptyCellColor();
     private static final Color CAPACITY_INDICATOR = new Color(255, 100, 100, 100);
-    private static final Color TEXT_COLOR = new Color(200, 220, 255);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color ACCENT_COLOR = new Color(0, 200, 255);
 
     public ArrayPanel(VisualArrayList arrayList) {
@@ -82,6 +86,11 @@ public class ArrayPanel extends JPanel {
         drawElements(g2d);
         drawHeader(g2d);
         drawStats(g2d);
+
+        if (arrayList.isAnimating()) {
+            drawAnimationOverlay(g2d);
+            drawAnimationInfo(g2d);
+        }
 
         if (arrayList.wasJustResized()) {
             drawResizeNotification(g2d);
@@ -418,6 +427,88 @@ public class ArrayPanel extends JPanel {
 
         g2d.setColor(new Color(255, (int)(150 * pulse), (int)(150 * pulse)));
         g2d.drawString(text, x, y);
+    }
+
+    private void drawAnimationOverlay(Graphics2D g2d) {
+        AnimationStep step = arrayList.getCurrentStep();
+        if (step == null) return;
+
+        List<VisualElement> elements = arrayList.getElements();
+        int cols = 10;
+        int cellWidth = 70;
+        int cellHeight = 70;
+        int startX = 50;
+        int startY = 100;
+
+        for (Map.Entry<Integer, AnimationState> entry : step.getIndexStates().entrySet()) {
+            int idx = entry.getKey();
+            if (idx < 0 || idx >= elements.size()) continue;
+
+            int col = idx % cols;
+            int row = idx / cols;
+            int x = startX + col * cellWidth + 2;
+            int y = startY + row * cellHeight + 2;
+            int w = cellWidth - 4;
+            int h = cellHeight - 4;
+
+            Color overlay;
+            float pulse = (float)(0.6 + 0.4 * Math.sin(glowPhase * 6));
+            switch (entry.getValue()) {
+                case COMPARING -> overlay = new Color(255, 220, 50, (int)(pulse * 120));
+                case SWAPPING -> overlay = new Color(255, 140, 50, (int)(pulse * 150));
+                case FOUND -> overlay = new Color(50, 255, 100, (int)(pulse * 160));
+                case ELIMINATED -> overlay = new Color(100, 100, 100, 80);
+                case SORTED -> overlay = new Color(50, 200, 100, 60);
+                case CURRENT -> overlay = new Color(0, 200, 255, (int)(pulse * 140));
+                default -> overlay = new Color(255, 255, 255, 30);
+            }
+
+            g2d.setColor(overlay);
+            g2d.fillRoundRect(x, y, w, h, 10, 10);
+
+            // Border glow
+            Color borderColor = switch (entry.getValue()) {
+                case COMPARING -> new Color(255, 220, 50, (int)(pulse * 200));
+                case SWAPPING -> new Color(255, 140, 50, (int)(pulse * 220));
+                case FOUND -> new Color(50, 255, 100, (int)(pulse * 220));
+                case CURRENT -> new Color(0, 200, 255, (int)(pulse * 220));
+                default -> new Color(0, 0, 0, 0);
+            };
+            if (borderColor.getAlpha() > 0) {
+                g2d.setColor(borderColor);
+                g2d.setStroke(new BasicStroke(3));
+                g2d.drawRoundRect(x, y, w, h, 10, 10);
+            }
+        }
+    }
+
+    private void drawAnimationInfo(Graphics2D g2d) {
+        AnimationStep step = arrayList.getCurrentStep();
+        if (step == null) return;
+
+        int barHeight = 36;
+        int y = getHeight() - 95;
+
+        // Banner background
+        g2d.setColor(new Color(20, 25, 40, 220));
+        g2d.fillRoundRect(50, y, 700, barHeight, 8, 8);
+
+        float glow = (float)(0.6 + 0.4 * Math.sin(glowPhase * 3));
+        g2d.setColor(new Color(0, 200, 255, (int)(glow * 150)));
+        g2d.setStroke(new BasicStroke(1.5f));
+        g2d.drawRoundRect(50, y, 700, barHeight, 8, 8);
+
+        // Step description
+        g2d.setFont(new Font("Consolas", Font.BOLD, 13));
+        g2d.setColor(new Color(255, 255, 255));
+        g2d.drawString(step.getDescription(), 65, y + 22);
+
+        // Step counter
+        String counter = "Step " + (arrayList.getCurrentStepIndex() + 1) + "/" + arrayList.getTotalSteps();
+        g2d.setFont(new Font("Consolas", Font.PLAIN, 11));
+        g2d.setColor(new Color(150, 200, 255));
+        FontMetrics fm = g2d.getFontMetrics();
+        g2d.drawString(counter, 750 - fm.stringWidth(counter) - 10, y + 22);
     }
 
     private static String formatBytes(long bytes) {

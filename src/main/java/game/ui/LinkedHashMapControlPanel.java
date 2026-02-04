@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Random;
+import game.ui.ThemeManager;
 
 public class LinkedHashMapControlPanel extends JPanel {
     private VisualLinkedHashMap linkedHashMap;
@@ -16,14 +17,14 @@ public class LinkedHashMapControlPanel extends JPanel {
     private JComboBox<String> valueTypeCombo;
     private JLabel statusLabel;
 
-    private static final Color BG_COLOR = new Color(28, 20, 15);
-    private static final Color PANEL_BG = new Color(45, 38, 28);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(255, 180, 130);
-    private static final Color TEXT_COLOR = new Color(255, 240, 225);
-    private static final Color BUTTON_BG = new Color(55, 45, 35);
-    private static final Color SUCCESS_COLOR = new Color(150, 255, 150);
-    private static final Color WARN_COLOR = new Color(255, 200, 100);
-    private static final Color ERROR_COLOR = new Color(255, 100, 100);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
+    private static Color BUTTON_BG = ThemeManager.get().getButtonBg();
+    private static Color SUCCESS_COLOR = ThemeManager.get().getSuccessColor();
+    private static Color WARN_COLOR = ThemeManager.get().getWarnColor();
+    private static Color ERROR_COLOR = ThemeManager.get().getErrorColor();
 
     public LinkedHashMapControlPanel(VisualLinkedHashMap linkedHashMap) {
         this.linkedHashMap = linkedHashMap;
@@ -33,6 +34,7 @@ public class LinkedHashMapControlPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         initComponents();
+        ThemeManager.get().addListener(() -> { updateThemeColors(); repaint(); });
     }
 
     private void initComponents() {
@@ -359,5 +361,13 @@ public class LinkedHashMapControlPanel extends JPanel {
             panel.add(label);
         }
         return panel;
+    }
+
+    private void updateThemeColors() {
+        BG_COLOR = ThemeManager.get().getBgColor();
+        TEXT_COLOR = ThemeManager.get().getTextColor();
+        PANEL_BG = ThemeManager.get().getPanelBg();
+        BUTTON_BG = ThemeManager.get().getButtonBg();
+        setBackground(BG_COLOR);
     }
 }

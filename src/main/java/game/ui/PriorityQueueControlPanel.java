@@ -1,38 +1,36 @@
 package game.ui;
 
-import game.model.VisualHashSet;
+import game.model.VisualPriorityQueue;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Random;
-import game.ui.ThemeManager;
 
-public class HashSetControlPanel extends JPanel {
-    private VisualHashSet hashSet;
+public class PriorityQueueControlPanel extends JPanel {
+    private VisualPriorityQueue queue;
     private Random random = new Random();
     private JTextField valueField;
     private JComboBox<String> typeCombo;
     private JLabel statusLabel;
 
-    private static Color BG_COLOR = ThemeManager.get().getBgColor();
-    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
-    private static final Color ACCENT = new Color(255, 150, 80);
-    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
-    private static Color BUTTON_BG = ThemeManager.get().getButtonBg();
-    private static Color SUCCESS_COLOR = ThemeManager.get().getSuccessColor();
-    private static Color WARN_COLOR = ThemeManager.get().getWarnColor();
-    private static Color ERROR_COLOR = ThemeManager.get().getErrorColor();
+    private static final Color BG_COLOR = new Color(25, 12, 15);
+    private static final Color PANEL_BG = new Color(50, 25, 30);
+    private static final Color ACCENT = new Color(255, 100, 100);
+    private static final Color TEXT_COLOR = new Color(255, 220, 220);
+    private static final Color BUTTON_BG = new Color(55, 30, 35);
+    private static final Color SUCCESS_COLOR = new Color(150, 255, 150);
+    private static final Color WARN_COLOR = new Color(255, 200, 100);
+    private static final Color ERROR_COLOR = new Color(255, 100, 100);
 
-    public HashSetControlPanel(VisualHashSet hashSet) {
-        this.hashSet = hashSet;
+    public PriorityQueueControlPanel(VisualPriorityQueue queue) {
+        this.queue = queue;
         setBackground(BG_COLOR);
-        setPreferredSize(new Dimension(260, 600));
+        setPreferredSize(new Dimension(280, 600));
         setBorder(new EmptyBorder(15, 15, 15, 15));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         initComponents();
-        ThemeManager.get().addListener(() -> { updateThemeColors(); repaint(); });
     }
 
     private void initComponents() {
@@ -40,7 +38,7 @@ public class HashSetControlPanel extends JPanel {
         add(Box.createVerticalStrut(10));
 
         add(createLabel("TYPE:"));
-        typeCombo = new JComboBox<>(new String[]{"int", "double", "String", "boolean", "char"});
+        typeCombo = new JComboBox<>(new String[]{"int", "double", "String", "char"});
         styleComboBox(typeCombo);
         add(typeCombo);
         add(Box.createVerticalStrut(8));
@@ -51,67 +49,48 @@ public class HashSetControlPanel extends JPanel {
         add(valueField);
         add(Box.createVerticalStrut(10));
 
-        JButton addBtn = createStyledButton("+ ADD TO SET", ACCENT);
-        addBtn.addActionListener(e -> addElement());
-        add(addBtn);
-        add(Box.createVerticalStrut(12));
+        JButton offerBtn = createStyledButton("offer(element)", ACCENT);
+        offerBtn.addActionListener(e -> offerElement());
+        add(offerBtn);
+        add(Box.createVerticalStrut(10));
 
-        add(createTitle("QUICK ADD"));
-        add(Box.createVerticalStrut(8));
+        // Poll and Peek
+        JPanel pollPeekPanel = new JPanel(new GridLayout(1, 2, 4, 0));
+        pollPeekPanel.setBackground(BG_COLOR);
+        pollPeekPanel.setMaximumSize(new Dimension(230, 28));
+        pollPeekPanel.setAlignmentX(LEFT_ALIGNMENT);
 
-        JPanel quickPanel = new JPanel(new GridLayout(2, 3, 4, 4));
-        quickPanel.setBackground(BG_COLOR);
-        quickPanel.setMaximumSize(new Dimension(230, 60));
-        quickPanel.setAlignmentX(LEFT_ALIGNMENT);
+        JButton pollBtn = createSmallButton("poll()", new Color(255, 150, 100));
+        pollBtn.addActionListener(e -> {
+            Object val = queue.poll();
+            updateStatus(val != null ? "Polled: " + val : "Empty queue", val != null ? SUCCESS_COLOR : WARN_COLOR);
+        });
+        pollPeekPanel.add(pollBtn);
 
-        String[] types = {"int", "double", "String", "boolean", "char", "Object"};
-        Color[] colors = {
-                new Color(0, 200, 255), new Color(255, 100, 200),
-                new Color(100, 255, 150), new Color(255, 200, 50),
-                new Color(200, 100, 255), new Color(255, 150, 100)
-        };
+        JButton peekBtn = createSmallButton("peek()", new Color(150, 200, 255));
+        peekBtn.addActionListener(e -> {
+            Object val = queue.peek();
+            updateStatus("Peek: " + (val != null ? val : "null"), val != null ? SUCCESS_COLOR : WARN_COLOR);
+        });
+        pollPeekPanel.add(peekBtn);
+        add(pollPeekPanel);
+        add(Box.createVerticalStrut(10));
 
-        for (int i = 0; i < types.length; i++) {
-            String type = types[i];
-            JButton btn = createSmallButton(type, colors[i]);
-            btn.addActionListener(e -> {
-                Object value = VisualHashSet.generateRandomValue(type, random);
-                if (hashSet.add(value, type)) {
-                    updateStatus("Added: " + value, SUCCESS_COLOR);
-                } else {
-                    updateStatus("Duplicate!", WARN_COLOR);
-                }
-            });
-            quickPanel.add(btn);
-        }
-        add(quickPanel);
-        add(Box.createVerticalStrut(12));
-
-        add(createTitle("HASHSET METHODS"));
-        add(Box.createVerticalStrut(8));
-
-        JPanel methodPanel = new JPanel(new GridLayout(2, 2, 4, 4));
+        // Contains and Size
+        JPanel methodPanel = new JPanel(new GridLayout(1, 2, 4, 0));
         methodPanel.setBackground(BG_COLOR);
-        methodPanel.setMaximumSize(new Dimension(230, 56));
+        methodPanel.setMaximumSize(new Dimension(230, 28));
         methodPanel.setAlignmentX(LEFT_ALIGNMENT);
 
-        JButton sizeBtn = createSmallButton("size()", new Color(150, 200, 255));
-        sizeBtn.addActionListener(e -> updateStatus("size() = " + hashSet.getSize(), TEXT_COLOR));
-        methodPanel.add(sizeBtn);
-
-        JButton isEmptyBtn = createSmallButton("isEmpty()", new Color(150, 200, 255));
-        isEmptyBtn.addActionListener(e -> updateStatus("isEmpty() = " + (hashSet.getSize() == 0), TEXT_COLOR));
-        methodPanel.add(isEmptyBtn);
-
-        JButton containsBtn = createSmallButton("contains()", new Color(150, 255, 200));
+        JButton containsBtn = createSmallButton("contains()", new Color(200, 200, 150));
         containsBtn.addActionListener(e -> {
             String val = valueField.getText().trim();
             if (!val.isEmpty()) {
                 String type = (String) typeCombo.getSelectedItem();
                 try {
                     Object value = parseValue(val, type);
-                    boolean found = hashSet.contains(value);
-                    updateStatus("contains(" + val + ") = " + found, found ? SUCCESS_COLOR : WARN_COLOR);
+                    boolean found = queue.contains(value);
+                    updateStatus("contains = " + found, found ? SUCCESS_COLOR : WARN_COLOR);
                 } catch (Exception ex) {
                     updateStatus("Invalid value", ERROR_COLOR);
                 }
@@ -121,28 +100,37 @@ public class HashSetControlPanel extends JPanel {
         });
         methodPanel.add(containsBtn);
 
-        JButton removeBtn = createSmallButton("remove()", ERROR_COLOR);
-        removeBtn.addActionListener(e -> {
-            String val = valueField.getText().trim();
-            if (!val.isEmpty()) {
-                String type = (String) typeCombo.getSelectedItem();
-                try {
-                    Object value = parseValue(val, type);
-                    if (hashSet.remove(value)) {
-                        updateStatus("Removed: " + val, SUCCESS_COLOR);
-                        valueField.setText("");
-                    } else {
-                        updateStatus("Not found: " + val, ERROR_COLOR);
-                    }
-                } catch (Exception ex) {
-                    updateStatus("Invalid value", ERROR_COLOR);
-                }
-            } else {
-                updateStatus("Enter value first", WARN_COLOR);
-            }
-        });
-        methodPanel.add(removeBtn);
+        JButton sizeBtn = createSmallButton("size()", new Color(150, 200, 255));
+        sizeBtn.addActionListener(e -> updateStatus("size() = " + queue.getSize(), TEXT_COLOR));
+        methodPanel.add(sizeBtn);
         add(methodPanel);
+        add(Box.createVerticalStrut(12));
+
+        add(createTitle("QUICK ADD"));
+        add(Box.createVerticalStrut(8));
+
+        JPanel quickPanel = new JPanel(new GridLayout(2, 2, 4, 4));
+        quickPanel.setBackground(BG_COLOR);
+        quickPanel.setMaximumSize(new Dimension(230, 56));
+        quickPanel.setAlignmentX(LEFT_ALIGNMENT);
+
+        String[] types = {"int", "double", "String", "char"};
+        Color[] colors = {
+                new Color(0, 200, 255), new Color(255, 100, 200),
+                new Color(100, 255, 150), new Color(200, 100, 255)
+        };
+
+        for (int i = 0; i < types.length; i++) {
+            String type = types[i];
+            JButton btn = createSmallButton(type, colors[i]);
+            btn.addActionListener(e -> {
+                Object value = VisualPriorityQueue.generateRandomValue(type, random);
+                queue.offer(value, type);
+                updateStatus("Offered: " + value, SUCCESS_COLOR);
+            });
+            quickPanel.add(btn);
+        }
+        add(quickPanel);
         add(Box.createVerticalStrut(12));
 
         add(createTitle("OPERATIONS"));
@@ -150,7 +138,7 @@ public class HashSetControlPanel extends JPanel {
 
         JButton clearBtn = createStyledButton("clear()", new Color(200, 80, 80));
         clearBtn.addActionListener(e -> {
-            hashSet.clear();
+            queue.clear();
             updateStatus("Cleared all elements", WARN_COLOR);
         });
         add(clearBtn);
@@ -164,18 +152,18 @@ public class HashSetControlPanel extends JPanel {
         autoPanel.setMaximumSize(new Dimension(230, 30));
         autoPanel.setAlignmentX(LEFT_ALIGNMENT);
 
-        JButton fill10Btn = createSmallButton("Fill x10", new Color(200, 150, 80));
+        JButton fill10Btn = createSmallButton("Fill x10", new Color(200, 100, 100));
         fill10Btn.addActionListener(e -> autoFill(10));
         autoPanel.add(fill10Btn);
 
-        JButton fill20Btn = createSmallButton("Fill x20", new Color(220, 170, 100));
+        JButton fill20Btn = createSmallButton("Fill x20", new Color(220, 120, 120));
         fill20Btn.addActionListener(e -> autoFill(20));
         autoPanel.add(fill20Btn);
         add(autoPanel);
         add(Box.createVerticalStrut(10));
 
         statusLabel = new JLabel(" ");
-        statusLabel.setFont(new Font("Consolas", Font.PLAIN, 10));
+        statusLabel.setFont(new Font("Consolas", Font.PLAIN, 12));
         statusLabel.setForeground(TEXT_COLOR);
         statusLabel.setAlignmentX(LEFT_ALIGNMENT);
         statusLabel.setMaximumSize(new Dimension(230, 20));
@@ -186,14 +174,12 @@ public class HashSetControlPanel extends JPanel {
     }
 
     private void autoFill(int count) {
-        Timer timer = new Timer(150, null);
+        Timer timer = new Timer(200, null);
         final int[] added = {0};
         timer.addActionListener(evt -> {
             if (added[0] < count) {
-                String[] types = {"int", "double", "String", "boolean", "char"};
-                String type = types[random.nextInt(types.length)];
-                Object value = VisualHashSet.generateRandomValue(type, random);
-                hashSet.add(value, type);
+                Object value = VisualPriorityQueue.generateRandomValue("int", random);
+                queue.offer(value, "int");
                 added[0]++;
                 updateStatus("Adding... " + added[0] + "/" + count, SUCCESS_COLOR);
             } else {
@@ -204,13 +190,13 @@ public class HashSetControlPanel extends JPanel {
         timer.start();
     }
 
-    private void addElement() {
+    private void offerElement() {
         String type = (String) typeCombo.getSelectedItem();
         String valueText = valueField.getText().trim();
         Object value;
 
         if (valueText.isEmpty()) {
-            value = VisualHashSet.generateRandomValue(type, random);
+            value = VisualPriorityQueue.generateRandomValue(type, random);
         } else {
             try {
                 value = parseValue(valueText, type);
@@ -220,12 +206,9 @@ public class HashSetControlPanel extends JPanel {
             }
         }
 
-        if (hashSet.add(value, type)) {
-            updateStatus("Added: " + value, SUCCESS_COLOR);
-            valueField.setText("");
-        } else {
-            updateStatus("Duplicate: " + value, WARN_COLOR);
-        }
+        queue.offer(value, type);
+        updateStatus("Offered: " + value + " (size=" + queue.getSize() + ")", SUCCESS_COLOR);
+        valueField.setText("");
     }
 
     private Object parseValue(String text, String type) {
@@ -235,7 +218,6 @@ public class HashSetControlPanel extends JPanel {
         return switch (type.toLowerCase()) {
             case "int" -> Integer.parseInt(text);
             case "double" -> Double.parseDouble(text);
-            case "boolean" -> Boolean.parseBoolean(text);
             case "char" -> text.isEmpty() ? '\0' : text.charAt(0);
             default -> text;
         };
@@ -266,7 +248,7 @@ public class HashSetControlPanel extends JPanel {
         combo.setBackground(BUTTON_BG);
         combo.setForeground(TEXT_COLOR);
         combo.setFont(new Font("Consolas", Font.PLAIN, 13));
-        combo.setMaximumSize(new Dimension(250, 30));
+        combo.setMaximumSize(new Dimension(250, 28));
         combo.setAlignmentX(LEFT_ALIGNMENT);
         combo.setBorder(BorderFactory.createLineBorder(ACCENT.darker(), 1));
     }
@@ -276,7 +258,7 @@ public class HashSetControlPanel extends JPanel {
         field.setForeground(TEXT_COLOR);
         field.setCaretColor(ACCENT);
         field.setFont(new Font("Consolas", Font.PLAIN, 13));
-        field.setMaximumSize(new Dimension(250, 30));
+        field.setMaximumSize(new Dimension(250, 28));
         field.setAlignmentX(LEFT_ALIGNMENT);
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ACCENT.darker(), 1),
@@ -370,38 +352,30 @@ public class HashSetControlPanel extends JPanel {
                 BorderFactory.createLineBorder(ACCENT.darker(), 1),
                 new EmptyBorder(8, 10, 8, 10)
         ));
-        panel.setMaximumSize(new Dimension(250, 130));
+        panel.setMaximumSize(new Dimension(230, 130));
         panel.setAlignmentX(LEFT_ALIGNMENT);
 
-        JLabel title = new JLabel("HASHSET INFO");
+        JLabel title = new JLabel("PRIORITYQUEUE INFO");
         title.setForeground(ACCENT);
         title.setFont(new Font("Consolas", Font.BOLD, 12));
         panel.add(title);
 
         String[] info = {
-                "Based on HashMap",
-                "O(1) add/remove/contains",
-                "No duplicates allowed",
-                "",
-                "Load factor: 0.75",
-                "Rehash doubles capacity"
+                "Binary min-heap",
+                "O(log n) offer/poll",
+                "O(1) peek",
+                "Array-backed: Object[]",
+                "Default capacity: 11",
+                "Not synchronized"
         };
 
         for (String line : info) {
-            JLabel label = new JLabel(line.isEmpty() ? " " : line);
-            label.setForeground(line.contains("O(1)") ? SUCCESS_COLOR : new Color(200, 180, 150));
+            JLabel label = new JLabel(line);
+            label.setForeground(line.contains("O(1)") ? SUCCESS_COLOR : new Color(200, 150, 150));
             label.setFont(new Font("Consolas", Font.PLAIN, 11));
             panel.add(label);
         }
 
         return panel;
-    }
-
-    private void updateThemeColors() {
-        BG_COLOR = ThemeManager.get().getBgColor();
-        TEXT_COLOR = ThemeManager.get().getTextColor();
-        PANEL_BG = ThemeManager.get().getPanelBg();
-        BUTTON_BG = ThemeManager.get().getButtonBg();
-        setBackground(BG_COLOR);
     }
 }

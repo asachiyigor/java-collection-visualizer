@@ -9,7 +9,11 @@ public enum DataStructureType {
     TREESET("TreeSet", "Red-Black tree, O(log n) sorted"),
     HASHMAP("HashMap", "Hash table, O(1) key-value operations"),
     LINKEDHASHMAP("LinkedHashMap", "Hash table + insertion order"),
-    TREEMAP("TreeMap", "Red-Black tree, O(log n) sorted by key");
+    TREEMAP("TreeMap", "Red-Black tree, O(log n) sorted by key"),
+    ARRAYDEQUE("ArrayDeque", "Resizable circular array, O(1) both ends"),
+    HASHTABLE("Hashtable", "Legacy synchronized hash table"),
+    PRIORITYQUEUE("PriorityQueue", "Binary min-heap, O(log n) offer/poll"),
+    CONCURRENTHASHMAP("ConcurrentHashMap", "Segment-locked hash map, thread-safe");
 
     private final String displayName;
     private final String description;

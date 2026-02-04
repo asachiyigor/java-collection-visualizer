@@ -5,14 +5,15 @@ import game.model.VisualArrayDeque;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import game.ui.ThemeManager;
 
 public class ArrayDequeMemoryDialog extends JDialog {
     private VisualArrayDeque deque;
 
-    private static final Color BG_COLOR = new Color(18, 12, 28);
-    private static final Color PANEL_BG = new Color(35, 25, 50);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(180, 100, 255);
-    private static final Color TEXT_COLOR = new Color(230, 210, 255);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public ArrayDequeMemoryDialog(Frame parent, VisualArrayDeque deque) {
         super(parent, "ArrayDeque Memory Analysis", true);

@@ -9,12 +9,13 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import game.ui.ThemeManager;
 
 public class LinkedListMemoryDialog extends JDialog {
-    private static final Color BG_COLOR = new Color(15, 10, 25);
-    private static final Color PANEL_BG = new Color(30, 25, 45);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(255, 100, 150);
-    private static final Color TEXT_COLOR = new Color(220, 200, 230);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color HEADER_COLOR = new Color(255, 150, 200);
 
     private VisualLinkedList linkedList;

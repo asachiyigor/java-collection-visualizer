@@ -5,14 +5,15 @@ import game.model.VisualTreeMap;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import game.ui.ThemeManager;
 
 public class TreeMapMemoryDialog extends JDialog {
     private VisualTreeMap treeMap;
 
-    private static final Color BG_COLOR = new Color(10, 16, 14);
-    private static final Color PANEL_BG = new Color(20, 32, 28);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(100, 220, 180);
-    private static final Color TEXT_COLOR = new Color(210, 250, 235);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public TreeMapMemoryDialog(Frame parent, VisualTreeMap treeMap) {
         super(parent, "TreeMap Memory Analysis", true);

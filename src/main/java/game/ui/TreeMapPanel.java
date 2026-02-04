@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class TreeMapPanel extends JPanel {
     private VisualTreeMap treeMap;
@@ -16,10 +17,10 @@ public class TreeMapPanel extends JPanel {
     private long lastTime;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(12, 20, 18);
-    private static final Color GRID_COLOR = new Color(28, 45, 40);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color ACCENT = new Color(100, 220, 180);
-    private static final Color TEXT_COLOR = new Color(210, 250, 235);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color RED_NODE = new Color(255, 100, 100);
     private static final Color BLACK_NODE = new Color(50, 50, 50);
 

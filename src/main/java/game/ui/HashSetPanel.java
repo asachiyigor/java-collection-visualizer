@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import game.ui.ThemeManager;
 
 public class HashSetPanel extends JPanel {
     private VisualHashSet hashSet;
@@ -17,10 +18,10 @@ public class HashSetPanel extends JPanel {
     private long lastTime;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(25, 18, 12);
-    private static final Color GRID_COLOR = new Color(60, 45, 30);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color ACCENT = new Color(255, 150, 80);
-    private static final Color TEXT_COLOR = new Color(255, 230, 200);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public HashSetPanel(VisualHashSet hashSet) {
         this.hashSet = hashSet;

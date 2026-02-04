@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class LinkedHashMapPanel extends JPanel {
     private VisualLinkedHashMap linkedHashMap;
@@ -16,10 +17,10 @@ public class LinkedHashMapPanel extends JPanel {
     private long lastTime;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(28, 20, 15);
-    private static final Color GRID_COLOR = new Color(50, 40, 32);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
     private static final Color ACCENT = new Color(255, 180, 130);
-    private static final Color TEXT_COLOR = new Color(255, 240, 225);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color ORDER_COLOR = new Color(255, 200, 100);
 
     public LinkedHashMapPanel(VisualLinkedHashMap linkedHashMap) {

@@ -1,15 +1,14 @@
 package game.ui;
 
-import game.model.VisualTreeMap;
+import game.model.VisualConcurrentHashMap;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Random;
-import game.ui.ThemeManager;
 
-public class TreeMapControlPanel extends JPanel {
-    private VisualTreeMap treeMap;
+public class ConcurrentHashMapControlPanel extends JPanel {
+    private VisualConcurrentHashMap map;
     private Random random = new Random();
     private JTextField keyField;
     private JTextField valueField;
@@ -17,109 +16,108 @@ public class TreeMapControlPanel extends JPanel {
     private JComboBox<String> valueTypeCombo;
     private JLabel statusLabel;
 
-    private static Color BG_COLOR = ThemeManager.get().getBgColor();
-    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
-    private static final Color ACCENT = new Color(100, 220, 180);
-    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
-    private static Color BUTTON_BG = ThemeManager.get().getButtonBg();
-    private static Color SUCCESS_COLOR = ThemeManager.get().getSuccessColor();
-    private static Color WARN_COLOR = ThemeManager.get().getWarnColor();
-    private static Color ERROR_COLOR = ThemeManager.get().getErrorColor();
+    private static final Color ACCENT = new Color(100, 150, 220);
+    private static final Color TEXT_COLOR = ThemeManager.get().getTextColor();
+    private static final Color BUTTON_BG = ThemeManager.get().getButtonBg();
+    private static final Color SUCCESS_COLOR = new Color(150, 255, 150);
+    private static final Color WARN_COLOR = new Color(255, 200, 100);
+    private static final Color ERROR_COLOR = new Color(255, 100, 100);
 
-    public TreeMapControlPanel(VisualTreeMap treeMap) {
-        this.treeMap = treeMap;
-        setBackground(BG_COLOR);
+    public ConcurrentHashMapControlPanel(VisualConcurrentHashMap map) {
+        this.map = map;
+        setBackground(ThemeManager.get().getBgColor());
         setPreferredSize(new Dimension(280, 600));
         setBorder(new EmptyBorder(15, 15, 15, 15));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         initComponents();
-        ThemeManager.get().addListener(() -> { updateThemeColors(); repaint(); });
     }
 
     private void initComponents() {
         add(createTitle("PUT ENTRY"));
-        add(Box.createVerticalStrut(6));
+        add(Box.createVerticalStrut(8));
 
         add(createLabel("KEY TYPE:"));
         keyTypeCombo = new JComboBox<>(new String[]{"int", "String"});
         styleComboBox(keyTypeCombo);
         add(keyTypeCombo);
+        add(Box.createVerticalStrut(4));
 
         add(createLabel("KEY:"));
         keyField = new JTextField();
         styleTextField(keyField);
         add(keyField);
-        add(Box.createVerticalStrut(4));
+        add(Box.createVerticalStrut(6));
 
         add(createLabel("VALUE TYPE:"));
-        valueTypeCombo = new JComboBox<>(new String[]{"String", "int", "double"});
+        valueTypeCombo = new JComboBox<>(new String[]{"String", "int", "double", "boolean"});
         styleComboBox(valueTypeCombo);
         add(valueTypeCombo);
+        add(Box.createVerticalStrut(4));
 
         add(createLabel("VALUE:"));
         valueField = new JTextField();
         styleTextField(valueField);
         add(valueField);
-        add(Box.createVerticalStrut(6));
+        add(Box.createVerticalStrut(8));
 
         JButton putBtn = createStyledButton("PUT", ACCENT);
         putBtn.addActionListener(e -> putEntry());
         add(putBtn);
-        add(Box.createVerticalStrut(8));
+        add(Box.createVerticalStrut(10));
 
         add(createTitle("QUICK ADD"));
-        add(Box.createVerticalStrut(4));
+        add(Box.createVerticalStrut(6));
 
         JPanel quickPanel = new JPanel(new GridLayout(2, 2, 4, 4));
-        quickPanel.setBackground(BG_COLOR);
-        quickPanel.setMaximumSize(new Dimension(230, 50));
+        quickPanel.setBackground(ThemeManager.get().getBgColor());
+        quickPanel.setMaximumSize(new Dimension(230, 56));
         quickPanel.setAlignmentX(LEFT_ALIGNMENT);
 
         JButton intIntBtn = createSmallButton("Int:Int", new Color(0, 200, 255));
         intIntBtn.addActionListener(e -> {
-            Object k = VisualTreeMap.generateRandomKey("int", random);
-            Object v = VisualTreeMap.generateRandomValue("int", random);
-            treeMap.put(k, v, "int", "int");
+            Object k = VisualConcurrentHashMap.generateRandomKey("int", random);
+            Object v = VisualConcurrentHashMap.generateRandomValue("int", random);
+            map.put(k, v, "int", "int");
             updateStatus(k + " -> " + v, SUCCESS_COLOR);
         });
         quickPanel.add(intIntBtn);
 
         JButton strStrBtn = createSmallButton("Str:Str", new Color(100, 255, 150));
         strStrBtn.addActionListener(e -> {
-            Object k = VisualTreeMap.generateRandomKey("String", random);
-            Object v = VisualTreeMap.generateRandomValue("String", random);
-            treeMap.put(k, v, "String", "String");
+            Object k = VisualConcurrentHashMap.generateRandomKey("String", random);
+            Object v = VisualConcurrentHashMap.generateRandomValue("String", random);
+            map.put(k, v, "String", "String");
             updateStatus(k + " -> " + v, SUCCESS_COLOR);
         });
         quickPanel.add(strStrBtn);
 
-        JButton strIntBtn = createSmallButton("Str:Int", new Color(100, 220, 180));
+        JButton strIntBtn = createSmallButton("Str:Int", new Color(255, 200, 80));
         strIntBtn.addActionListener(e -> {
-            Object k = VisualTreeMap.generateRandomKey("String", random);
-            Object v = VisualTreeMap.generateRandomValue("int", random);
-            treeMap.put(k, v, "String", "int");
+            Object k = VisualConcurrentHashMap.generateRandomKey("String", random);
+            Object v = VisualConcurrentHashMap.generateRandomValue("int", random);
+            map.put(k, v, "String", "int");
             updateStatus(k + " -> " + v, SUCCESS_COLOR);
         });
         quickPanel.add(strIntBtn);
 
         JButton intStrBtn = createSmallButton("Int:Str", new Color(255, 100, 200));
         intStrBtn.addActionListener(e -> {
-            Object k = VisualTreeMap.generateRandomKey("int", random);
-            Object v = VisualTreeMap.generateRandomValue("String", random);
-            treeMap.put(k, v, "int", "String");
+            Object k = VisualConcurrentHashMap.generateRandomKey("int", random);
+            Object v = VisualConcurrentHashMap.generateRandomValue("String", random);
+            map.put(k, v, "int", "String");
             updateStatus(k + " -> " + v, SUCCESS_COLOR);
         });
         quickPanel.add(intStrBtn);
         add(quickPanel);
-        add(Box.createVerticalStrut(8));
+        add(Box.createVerticalStrut(10));
 
         add(createTitle("METHODS"));
-        add(Box.createVerticalStrut(4));
+        add(Box.createVerticalStrut(6));
 
         JPanel methodPanel = new JPanel(new GridLayout(2, 2, 4, 4));
-        methodPanel.setBackground(BG_COLOR);
-        methodPanel.setMaximumSize(new Dimension(230, 50));
+        methodPanel.setBackground(ThemeManager.get().getBgColor());
+        methodPanel.setMaximumSize(new Dimension(230, 56));
         methodPanel.setAlignmentX(LEFT_ALIGNMENT);
 
         JButton getBtn = createSmallButton("get(key)", new Color(150, 255, 200));
@@ -128,8 +126,10 @@ public class TreeMapControlPanel extends JPanel {
             if (!keyText.isEmpty()) {
                 String keyType = (String) keyTypeCombo.getSelectedItem();
                 Object key = parseValue(keyText, keyType);
-                Object value = treeMap.get(key);
+                Object value = map.get(key);
                 updateStatus("get = " + (value != null ? value : "null"), value != null ? SUCCESS_COLOR : WARN_COLOR);
+            } else {
+                updateStatus("Enter key first", WARN_COLOR);
             }
         });
         methodPanel.add(getBtn);
@@ -140,54 +140,71 @@ public class TreeMapControlPanel extends JPanel {
             if (!keyText.isEmpty()) {
                 String keyType = (String) keyTypeCombo.getSelectedItem();
                 Object key = parseValue(keyText, keyType);
-                boolean found = treeMap.containsKey(key);
+                boolean found = map.containsKey(key);
                 updateStatus("containsKey = " + found, found ? SUCCESS_COLOR : WARN_COLOR);
+            } else {
+                updateStatus("Enter key first", WARN_COLOR);
             }
         });
         methodPanel.add(containsBtn);
 
-        JButton firstBtn = createSmallButton("firstKey()", new Color(200, 200, 150));
-        firstBtn.addActionListener(e -> {
-            Object first = treeMap.firstKey();
-            updateStatus("firstKey = " + (first != null ? first : "empty"), first != null ? SUCCESS_COLOR : WARN_COLOR);
-        });
-        methodPanel.add(firstBtn);
+        JButton sizeBtn = createSmallButton("size()", new Color(150, 200, 255));
+        sizeBtn.addActionListener(e -> updateStatus("size() = " + map.getSize(), ThemeManager.get().getTextColor()));
+        methodPanel.add(sizeBtn);
 
-        JButton lastBtn = createSmallButton("lastKey()", new Color(200, 200, 150));
-        lastBtn.addActionListener(e -> {
-            Object last = treeMap.lastKey();
-            updateStatus("lastKey = " + (last != null ? last : "empty"), last != null ? SUCCESS_COLOR : WARN_COLOR);
+        JButton removeBtn = createSmallButton("remove()", ERROR_COLOR);
+        removeBtn.addActionListener(e -> {
+            String keyText = keyField.getText().trim();
+            if (!keyText.isEmpty()) {
+                String keyType = (String) keyTypeCombo.getSelectedItem();
+                Object key = parseValue(keyText, keyType);
+                Object removed = map.remove(key);
+                if (removed != null) {
+                    updateStatus("Removed: " + key, SUCCESS_COLOR);
+                    keyField.setText("");
+                } else {
+                    updateStatus("Key not found", ERROR_COLOR);
+                }
+            } else {
+                updateStatus("Enter key first", WARN_COLOR);
+            }
         });
-        methodPanel.add(lastBtn);
+        methodPanel.add(removeBtn);
         add(methodPanel);
-        add(Box.createVerticalStrut(8));
+        add(Box.createVerticalStrut(10));
+
+        add(createTitle("OPERATIONS"));
+        add(Box.createVerticalStrut(6));
 
         JButton clearBtn = createStyledButton("clear()", new Color(200, 80, 80));
         clearBtn.addActionListener(e -> {
-            treeMap.clear();
-            updateStatus("Cleared", WARN_COLOR);
+            map.clear();
+            updateStatus("Cleared all entries", WARN_COLOR);
         });
         add(clearBtn);
+        add(Box.createVerticalStrut(8));
+
+        add(createTitle("AUTO MODE"));
         add(Box.createVerticalStrut(6));
 
         JPanel autoPanel = new JPanel(new GridLayout(1, 2, 4, 0));
-        autoPanel.setBackground(BG_COLOR);
-        autoPanel.setMaximumSize(new Dimension(230, 26));
+        autoPanel.setBackground(ThemeManager.get().getBgColor());
+        autoPanel.setMaximumSize(new Dimension(230, 28));
         autoPanel.setAlignmentX(LEFT_ALIGNMENT);
 
-        JButton fill10Btn = createSmallButton("Fill x10", new Color(80, 180, 150));
+        JButton fill10Btn = createSmallButton("Fill x10", new Color(100, 150, 220));
         fill10Btn.addActionListener(e -> autoFill(10));
         autoPanel.add(fill10Btn);
 
-        JButton fill20Btn = createSmallButton("Fill x20", new Color(100, 200, 170));
+        JButton fill20Btn = createSmallButton("Fill x20", new Color(130, 170, 240));
         fill20Btn.addActionListener(e -> autoFill(20));
         autoPanel.add(fill20Btn);
         add(autoPanel);
-        add(Box.createVerticalStrut(6));
+        add(Box.createVerticalStrut(8));
 
         statusLabel = new JLabel(" ");
         statusLabel.setFont(new Font("Consolas", Font.PLAIN, 12));
-        statusLabel.setForeground(TEXT_COLOR);
+        statusLabel.setForeground(ThemeManager.get().getTextColor());
         statusLabel.setAlignmentX(LEFT_ALIGNMENT);
         statusLabel.setMaximumSize(new Dimension(230, 20));
         add(statusLabel);
@@ -197,18 +214,18 @@ public class TreeMapControlPanel extends JPanel {
     }
 
     private void autoFill(int count) {
-        Timer timer = new Timer(200, null);
+        Timer timer = new Timer(150, null);
         final int[] added = {0};
         timer.addActionListener(evt -> {
             if (added[0] < count) {
-                Object k = VisualTreeMap.generateRandomKey("int", random);
-                Object v = VisualTreeMap.generateRandomValue("int", random);
-                treeMap.put(k, v, "int", "int");
+                Object k = VisualConcurrentHashMap.generateRandomKey("String", random);
+                Object v = VisualConcurrentHashMap.generateRandomValue("int", random);
+                map.put(k, v, "String", "int");
                 added[0]++;
                 updateStatus("Adding... " + added[0] + "/" + count, SUCCESS_COLOR);
             } else {
                 timer.stop();
-                updateStatus("Added " + count + " (h=" + treeMap.getHeight() + ")", SUCCESS_COLOR);
+                updateStatus("Added " + count + " entries", SUCCESS_COLOR);
             }
         });
         timer.start();
@@ -220,29 +237,43 @@ public class TreeMapControlPanel extends JPanel {
         String keyText = keyField.getText().trim();
         String valueText = valueField.getText().trim();
 
-        Object key = keyText.isEmpty() ? VisualTreeMap.generateRandomKey(keyType, random) : parseValue(keyText, keyType);
-        Object value = valueText.isEmpty() ? VisualTreeMap.generateRandomValue(valueType, random) : parseValue(valueText, valueType);
+        if (keyText.equalsIgnoreCase("null") || valueText.equalsIgnoreCase("null")) {
+            updateStatus("Null not allowed!", ERROR_COLOR);
+            return;
+        }
 
-        treeMap.put(key, value, keyType, valueType);
-        updateStatus(key + " -> " + value, SUCCESS_COLOR);
+        Object key = keyText.isEmpty() ?
+                VisualConcurrentHashMap.generateRandomKey(keyType, random) :
+                parseValue(keyText, keyType);
+        Object value = valueText.isEmpty() ?
+                VisualConcurrentHashMap.generateRandomValue(valueType, random) :
+                parseValue(valueText, valueType);
+
+        if (key == null || value == null) {
+            updateStatus("Null not allowed!", ERROR_COLOR);
+            return;
+        }
+
+        map.put(key, value, keyType, valueType);
+        updateStatus("Put: " + key + " -> " + value, SUCCESS_COLOR);
         keyField.setText("");
         valueField.setText("");
     }
 
     private Object parseValue(String text, String type) {
-        // Note: TreeMap does NOT allow null keys - throws NPE (but allows null values)
         if (text.equalsIgnoreCase("null")) {
             return null;
         }
         return switch (type.toLowerCase()) {
             case "int" -> Integer.parseInt(text);
             case "double" -> Double.parseDouble(text);
+            case "boolean" -> Boolean.parseBoolean(text);
             default -> text;
         };
     }
 
-    private void updateStatus(String msg, Color color) {
-        statusLabel.setText(msg);
+    private void updateStatus(String message, Color color) {
+        statusLabel.setText(message);
         statusLabel.setForeground(color);
     }
 
@@ -256,28 +287,32 @@ public class TreeMapControlPanel extends JPanel {
 
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setForeground(TEXT_COLOR);
+        label.setForeground(ThemeManager.get().getTextColor());
         label.setFont(new Font("Consolas", Font.PLAIN, 12));
         label.setAlignmentX(LEFT_ALIGNMENT);
         return label;
     }
 
     private void styleComboBox(JComboBox<String> combo) {
-        combo.setBackground(BUTTON_BG);
-        combo.setForeground(TEXT_COLOR);
+        combo.setBackground(ThemeManager.get().getButtonBg());
+        combo.setForeground(ThemeManager.get().getTextColor());
         combo.setFont(new Font("Consolas", Font.PLAIN, 13));
-        combo.setMaximumSize(new Dimension(250, 24));
+        combo.setMaximumSize(new Dimension(250, 26));
         combo.setAlignmentX(LEFT_ALIGNMENT);
+        combo.setBorder(BorderFactory.createLineBorder(ACCENT.darker(), 1));
     }
 
     private void styleTextField(JTextField field) {
-        field.setBackground(BUTTON_BG);
-        field.setForeground(TEXT_COLOR);
+        field.setBackground(ThemeManager.get().getButtonBg());
+        field.setForeground(ThemeManager.get().getTextColor());
         field.setCaretColor(ACCENT);
         field.setFont(new Font("Consolas", Font.PLAIN, 13));
-        field.setMaximumSize(new Dimension(250, 24));
+        field.setMaximumSize(new Dimension(250, 26));
         field.setAlignmentX(LEFT_ALIGNMENT);
-        field.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ACCENT.darker(), 1), BorderFactory.createEmptyBorder(2, 5, 2, 5)));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ACCENT.darker(), 1),
+                BorderFactory.createEmptyBorder(3, 6, 3, 6)
+        ));
     }
 
     private JButton createStyledButton(String text, Color accentColor) {
@@ -286,18 +321,30 @@ public class TreeMapControlPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(getModel().isPressed() ? accentColor.darker() : getModel().isRollover() ? accentColor : BUTTON_BG);
+
+                if (getModel().isPressed()) {
+                    g2d.setColor(accentColor.darker());
+                } else if (getModel().isRollover()) {
+                    g2d.setColor(accentColor);
+                } else {
+                    g2d.setColor(ThemeManager.get().getButtonBg());
+                }
+
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6);
                 g2d.setColor(accentColor);
                 g2d.setStroke(new BasicStroke(1.5f));
                 g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 6, 6);
-                g2d.setColor(TEXT_COLOR);
+
+                g2d.setColor(ThemeManager.get().getTextColor());
                 g2d.setFont(getFont());
                 FontMetrics fm = g2d.getFontMetrics();
-                g2d.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2d.drawString(getText(), x, y);
                 g2d.dispose();
             }
         };
+
         button.setFont(new Font("Consolas", Font.BOLD, 13));
         button.setMaximumSize(new Dimension(250, 32));
         button.setAlignmentX(LEFT_ALIGNMENT);
@@ -314,17 +361,30 @@ public class TreeMapControlPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(getModel().isPressed() ? color : getModel().isRollover() ? color.darker() : new Color(color.getRed(), color.getGreen(), color.getBlue(), 40));
+
+                if (getModel().isPressed()) {
+                    g2d.setColor(color);
+                } else if (getModel().isRollover()) {
+                    g2d.setColor(color.darker());
+                } else {
+                    g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 40));
+                }
+
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 5, 5);
                 g2d.setColor(color);
+                g2d.setStroke(new BasicStroke(1));
                 g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 5, 5);
-                g2d.setColor(TEXT_COLOR);
+
+                g2d.setColor(ThemeManager.get().getTextColor());
                 g2d.setFont(getFont());
                 FontMetrics fm = g2d.getFontMetrics();
-                g2d.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2d.drawString(getText(), x, y);
                 g2d.dispose();
             }
         };
+
         button.setFont(new Font("Consolas", Font.PLAIN, 11));
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
@@ -336,31 +396,34 @@ public class TreeMapControlPanel extends JPanel {
     private JPanel createInfoPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(PANEL_BG);
-        panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ACCENT.darker(), 1), new EmptyBorder(8, 10, 8, 10)));
-        panel.setMaximumSize(new Dimension(230, 90));
+        panel.setBackground(ThemeManager.get().getPanelBg());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ACCENT.darker(), 1),
+                new EmptyBorder(8, 10, 8, 10)
+        ));
+        panel.setMaximumSize(new Dimension(230, 120));
         panel.setAlignmentX(LEFT_ALIGNMENT);
 
-        JLabel title = new JLabel("TREEMAP INFO");
+        JLabel title = new JLabel("CONCURRENTHASHMAP INFO");
         title.setForeground(ACCENT);
-        title.setFont(new Font("Consolas", Font.BOLD, 12));
+        title.setFont(new Font("Consolas", Font.BOLD, 11));
         panel.add(title);
 
-        String[] info = {"Red-Black tree based", "O(log n) operations", "Sorted by keys", "40 bytes per entry"};
+        String[] info = {
+                "Segment-based locking",
+                "No null keys/values",
+                "CAS for reads",
+                "concurrencyLevel: 4",
+                "Load factor: 0.75"
+        };
+
         for (String line : info) {
             JLabel label = new JLabel(line);
-            label.setForeground(line.contains("Sorted") ? SUCCESS_COLOR : new Color(150, 200, 180));
+            label.setForeground(new Color(150, 170, 210));
             label.setFont(new Font("Consolas", Font.PLAIN, 11));
             panel.add(label);
         }
-        return panel;
-    }
 
-    private void updateThemeColors() {
-        BG_COLOR = ThemeManager.get().getBgColor();
-        TEXT_COLOR = ThemeManager.get().getTextColor();
-        PANEL_BG = ThemeManager.get().getPanelBg();
-        BUTTON_BG = ThemeManager.get().getButtonBg();
-        setBackground(BG_COLOR);
+        return panel;
     }
 }

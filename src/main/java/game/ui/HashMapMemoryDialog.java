@@ -5,14 +5,15 @@ import game.model.VisualHashMap;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import game.ui.ThemeManager;
 
 public class HashMapMemoryDialog extends JDialog {
     private VisualHashMap hashMap;
 
-    private static final Color BG_COLOR = new Color(20, 18, 8);
-    private static final Color PANEL_BG = new Color(35, 32, 15);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(255, 200, 80);
-    private static final Color TEXT_COLOR = new Color(255, 245, 220);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public HashMapMemoryDialog(Frame parent, VisualHashMap hashMap) {
         super(parent, "HashMap Memory Analysis", true);

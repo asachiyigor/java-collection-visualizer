@@ -5,14 +5,15 @@ import game.model.VisualLinkedHashSet;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import game.ui.ThemeManager;
 
 public class LinkedHashSetMemoryDialog extends JDialog {
     private VisualLinkedHashSet linkedHashSet;
 
-    private static final Color BG_COLOR = new Color(20, 12, 15);
-    private static final Color PANEL_BG = new Color(35, 25, 28);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(255, 120, 120);
-    private static final Color TEXT_COLOR = new Color(255, 220, 225);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color ORDER_COLOR = new Color(255, 180, 100);
 
     public LinkedHashSetMemoryDialog(Frame parent, VisualLinkedHashSet linkedHashSet) {

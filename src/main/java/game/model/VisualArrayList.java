@@ -1,7 +1,9 @@
 package game.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class VisualArrayList {
@@ -462,5 +464,213 @@ public class VisualArrayList {
     private static String generateRandomString(Random random) {
         String[] words = {"Node", "Data", "Lab", "Core", "Sys", "Net", "Hub", "Link", "Port", "Flow"};
         return words[random.nextInt(words.length)];
+    }
+
+    // ── Animation support ────────────────────────────────────────
+
+    public enum AnimationState { COMPARING, SWAPPING, FOUND, ELIMINATED, SORTED, CURRENT }
+
+    public static class AnimationStep {
+        private final Map<Integer, AnimationState> indexStates;
+        private final String description;
+
+        public AnimationStep(Map<Integer, AnimationState> indexStates, String description) {
+            this.indexStates = indexStates;
+            this.description = description;
+        }
+
+        public Map<Integer, AnimationState> getIndexStates() { return indexStates; }
+        public String getDescription() { return description; }
+    }
+
+    private List<AnimationStep> animationSteps = new ArrayList<>();
+    private int currentAnimationStep = -1;
+    private boolean animating = false;
+
+    public boolean isAnimating() { return animating; }
+
+    public AnimationStep getCurrentStep() {
+        if (!animating || currentAnimationStep < 0 || currentAnimationStep >= animationSteps.size()) return null;
+        return animationSteps.get(currentAnimationStep);
+    }
+
+    public int getCurrentStepIndex() { return currentAnimationStep; }
+    public int getTotalSteps() { return animationSteps.size(); }
+
+    public void startAnimation(List<AnimationStep> steps) {
+        this.animationSteps = steps;
+        this.currentAnimationStep = 0;
+        this.animating = true;
+    }
+
+    public boolean advanceAnimation() {
+        if (!animating) return false;
+        currentAnimationStep++;
+        if (currentAnimationStep >= animationSteps.size()) {
+            animating = false;
+            currentAnimationStep = -1;
+            return false;
+        }
+
+        // Apply swaps if the current step is a SWAPPING step
+        AnimationStep step = animationSteps.get(currentAnimationStep);
+        List<Integer> swapIndices = new ArrayList<>();
+        for (Map.Entry<Integer, AnimationState> entry : step.getIndexStates().entrySet()) {
+            if (entry.getValue() == AnimationState.SWAPPING) {
+                swapIndices.add(entry.getKey());
+            }
+        }
+        if (swapIndices.size() == 2) {
+            swapElements(swapIndices.get(0), swapIndices.get(1));
+        }
+        return true;
+    }
+
+    public void stopAnimation() {
+        animating = false;
+        currentAnimationStep = -1;
+        animationSteps.clear();
+    }
+
+    public synchronized void swapElements(int i, int j) {
+        if (i >= 0 && i < elements.size() && j >= 0 && j < elements.size() && i != j) {
+            VisualElement temp = elements.get(i);
+            elements.set(i, elements.get(j));
+            elements.set(j, temp);
+            updateTargetPositions();
+        }
+    }
+
+    public List<AnimationStep> generateBubbleSortSteps() {
+        List<AnimationStep> steps = new ArrayList<>();
+        int n = elements.size();
+        if (n <= 1) return steps;
+
+        // Work on a copy of values to pre-compute steps
+        List<Comparable> values = new ArrayList<>();
+        for (VisualElement e : elements) {
+            Object v = e.getValue();
+            if (v instanceof Comparable) {
+                values.add((Comparable) v);
+            } else {
+                return steps; // Can't sort non-comparable
+            }
+        }
+
+        for (int pass = 0; pass < n - 1; pass++) {
+            boolean swapped = false;
+            for (int j = 0; j < n - 1 - pass; j++) {
+                // Compare step
+                Map<Integer, AnimationState> compareMap = new HashMap<>();
+                compareMap.put(j, AnimationState.COMPARING);
+                compareMap.put(j + 1, AnimationState.COMPARING);
+                // Mark already sorted
+                for (int s = n - pass; s < n; s++) compareMap.put(s, AnimationState.SORTED);
+                steps.add(new AnimationStep(compareMap, "Comparing [" + j + "] and [" + j + 1 + "]"));
+
+                @SuppressWarnings("unchecked")
+                int cmp = values.get(j).compareTo(values.get(j + 1));
+                if (cmp > 0) {
+                    // Swap step
+                    Map<Integer, AnimationState> swapMap = new HashMap<>();
+                    swapMap.put(j, AnimationState.SWAPPING);
+                    swapMap.put(j + 1, AnimationState.SWAPPING);
+                    for (int s = n - pass; s < n; s++) swapMap.put(s, AnimationState.SORTED);
+                    steps.add(new AnimationStep(swapMap, "Swapping [" + j + "] and [" + (j + 1) + "]"));
+
+                    Comparable temp = values.get(j);
+                    values.set(j, values.get(j + 1));
+                    values.set(j + 1, temp);
+                    swapped = true;
+                }
+            }
+            if (!swapped) break;
+        }
+
+        // Final step: all sorted
+        Map<Integer, AnimationState> finalMap = new HashMap<>();
+        for (int i = 0; i < n; i++) finalMap.put(i, AnimationState.SORTED);
+        steps.add(new AnimationStep(finalMap, "Sort complete!"));
+
+        return steps;
+    }
+
+    public List<AnimationStep> generateLinearSearchSteps(Object target) {
+        List<AnimationStep> steps = new ArrayList<>();
+        String targetStr = String.valueOf(target);
+        int n = elements.size();
+
+        for (int i = 0; i < n; i++) {
+            Map<Integer, AnimationState> map = new HashMap<>();
+            // Mark previously checked as eliminated
+            for (int p = 0; p < i; p++) map.put(p, AnimationState.ELIMINATED);
+            map.put(i, AnimationState.CURRENT);
+
+            Object val = elements.get(i).getValue();
+            boolean match = val != null && val.toString().equals(targetStr);
+            if (match) {
+                map.put(i, AnimationState.FOUND);
+                steps.add(new AnimationStep(map, "Found " + target + " at index [" + i + "]!"));
+                return steps;
+            }
+            steps.add(new AnimationStep(map, "Checking [" + i + "]: " + val));
+        }
+
+        // Not found
+        Map<Integer, AnimationState> notFoundMap = new HashMap<>();
+        for (int i = 0; i < n; i++) notFoundMap.put(i, AnimationState.ELIMINATED);
+        steps.add(new AnimationStep(notFoundMap, target + " not found"));
+        return steps;
+    }
+
+    public List<AnimationStep> generateBinarySearchSteps(Object target) {
+        List<AnimationStep> steps = new ArrayList<>();
+        int n = elements.size();
+        if (n == 0) return steps;
+
+        int targetInt;
+        try {
+            targetInt = Integer.parseInt(String.valueOf(target));
+        } catch (NumberFormatException e) {
+            return steps; // Binary search only for integers
+        }
+
+        int low = 0, high = n - 1;
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            Map<Integer, AnimationState> map = new HashMap<>();
+
+            // Mark out-of-range as eliminated
+            for (int i = 0; i < low; i++) map.put(i, AnimationState.ELIMINATED);
+            for (int i = high + 1; i < n; i++) map.put(i, AnimationState.ELIMINATED);
+            // Mark active range
+            for (int i = low; i <= high; i++) map.put(i, AnimationState.COMPARING);
+            map.put(mid, AnimationState.CURRENT);
+
+            Object midVal = elements.get(mid).getValue();
+            int midInt;
+            try {
+                midInt = Integer.parseInt(String.valueOf(midVal));
+            } catch (NumberFormatException e) {
+                break;
+            }
+
+            if (midInt == targetInt) {
+                map.put(mid, AnimationState.FOUND);
+                steps.add(new AnimationStep(map, "Found " + target + " at [" + mid + "]!"));
+                return steps;
+            } else if (midInt < targetInt) {
+                steps.add(new AnimationStep(map, "mid=[" + mid + "]=" + midInt + " < " + target + ", go right"));
+                low = mid + 1;
+            } else {
+                steps.add(new AnimationStep(map, "mid=[" + mid + "]=" + midInt + " > " + target + ", go left"));
+                high = mid - 1;
+            }
+        }
+
+        Map<Integer, AnimationState> notFoundMap = new HashMap<>();
+        for (int i = 0; i < n; i++) notFoundMap.put(i, AnimationState.ELIMINATED);
+        steps.add(new AnimationStep(notFoundMap, target + " not found"));
+        return steps;
     }
 }

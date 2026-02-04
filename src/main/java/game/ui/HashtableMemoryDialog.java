@@ -5,14 +5,15 @@ import game.model.VisualHashtable;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import game.ui.ThemeManager;
 
 public class HashtableMemoryDialog extends JDialog {
     private VisualHashtable hashtable;
 
-    private static final Color BG_COLOR = new Color(20, 14, 10);
-    private static final Color PANEL_BG = new Color(40, 30, 22);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color PANEL_BG = ThemeManager.get().getPanelBg();
     private static final Color ACCENT = new Color(200, 120, 80);
-    private static final Color TEXT_COLOR = new Color(255, 230, 210);
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
 
     public HashtableMemoryDialog(Frame parent, VisualHashtable hashtable) {
         super(parent, "Hashtable Memory Analysis", true);

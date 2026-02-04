@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+import game.ui.ThemeManager;
 
 public class ArrayDisplayPanel extends JPanel {
     private VisualArray array;
@@ -14,10 +15,10 @@ public class ArrayDisplayPanel extends JPanel {
     private double glowPhase = 0;
     private Rectangle memoryPanelBounds = new Rectangle();
 
-    private static final Color BG_COLOR = new Color(10, 20, 15);
-    private static final Color GRID_COLOR = new Color(30, 50, 40);
-    private static final Color EMPTY_CELL = new Color(20, 35, 30);
-    private static final Color TEXT_COLOR = new Color(200, 230, 210);
+    private static Color BG_COLOR = ThemeManager.get().getBgColor();
+    private static Color GRID_COLOR = ThemeManager.get().getGridColor();
+    private static Color EMPTY_CELL = ThemeManager.get().getEmptyCellColor();
+    private static Color TEXT_COLOR = ThemeManager.get().getTextColor();
     private static final Color ACCENT_COLOR = new Color(100, 255, 150);
 
     public ArrayDisplayPanel(VisualArray array) {
