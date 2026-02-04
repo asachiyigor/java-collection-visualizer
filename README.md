@@ -48,34 +48,16 @@ java -cp out game.Main
 ## Screenshots
 
 ### ArrayList Visualization
-```
-+-------+-------+-------+-------+-------+-------+
-|  42   | 3.14  | "Hi"  | true  |  'A'  | null  |
-|  int  |double |String | bool  | char  | null  |
-+-------+-------+-------+-------+-------+-------+
-[###############............] SIZE: 6 / CAPACITY: 10
-```
+![ArrayList](screenshots/arraylist.png)
 
 ### LinkedList Visualization
-```
-[HEAD]-->[42|int]<==>[3.14|dbl]<==>[Hi|str]-->[TAIL]
-```
+![LinkedList](screenshots/linkedlist.png)
 
-### HashSet Visualization
-```
-Bucket[0]: empty
-Bucket[1]: [42] -> [99]    (collision chain)
-Bucket[2]: ["Hello"]
-```
+### TreeSet Visualization (Red-Black Tree)
+![TreeSet](screenshots/treeset.png)
 
-### TreeSet Visualization
-```
-         [42]
-        /    \
-     [15]    [67]
-     /  \      \
-   [8]  [23]  [89]
-```
+### HashMap Visualization
+![HashMap](screenshots/hashmap.png)
 
 ## Memory Comparison
 
