@@ -1,0 +1,334 @@
+================================================================================
+                     JAVA COLLECTION VISUALIZER
+================================================================================
+
+An interactive educational tool for visualizing Java Collections Framework
+data structures with real-time memory analysis and sci-fi inspired UI.
+
+GitHub: https://github.com/[your-username]/java-collection-visualizer
+
+================================================================================
+                            OVERVIEW
+================================================================================
+
+Java Collection Visualizer helps developers and students understand how
+different Java data structures work internally. It provides:
+
+  - Real-time visualization of data structure operations
+  - Memory usage analysis with byte-level breakdown
+  - Animated insertions and deletions
+  - Side-by-side comparison of similar structures
+  - Support for multiple data types (int, double, String, char, boolean, null)
+
+The application is built with pure Java Swing - no external dependencies.
+
+================================================================================
+                      SUPPORTED DATA STRUCTURES
+================================================================================
+
+LIST IMPLEMENTATIONS (3)
+------------------------
+  1. ArrayList     - Dynamic array with automatic resizing
+                     Theme: Cyan | O(1) random access, O(1) amortized add
+
+  2. LinkedList    - Doubly-linked list implementation
+                     Theme: Pink | O(1) add/remove at ends, O(n) random access
+
+  3. Array         - Fixed-size primitive array
+                     Theme: Green | O(1) access, no resizing
+
+DEQUE IMPLEMENTATION (1)
+------------------------
+  4. ArrayDeque    - Resizable circular array deque
+                     Theme: Purple | O(1) add/remove at both ends
+
+SET IMPLEMENTATIONS (3)
+-----------------------
+  5. HashSet       - Hash table based set, no order guaranteed
+                     Theme: Orange | O(1) average operations
+
+  6. LinkedHashSet - Hash table + linked list, insertion order preserved
+                     Theme: Red | O(1) operations + predictable iteration
+
+  7. TreeSet       - Red-Black tree based sorted set
+                     Theme: Teal | O(log n) operations, elements sorted
+
+MAP IMPLEMENTATIONS (3)
+-----------------------
+  8. HashMap       - Hash table based map, no order guaranteed
+                     Theme: Yellow | O(1) average operations
+
+  9. LinkedHashMap - Hash table + linked list, insertion order preserved
+                     Theme: Peach | O(1) operations + predictable iteration
+
+  10. TreeMap      - Red-Black tree based sorted map
+                     Theme: Mint | O(log n) operations, keys sorted
+
+LEGACY COLLECTION (1)
+---------------------
+  11. Hashtable    - Synchronized hash table (Dictionary)
+                     Theme: Brown | Thread-safe, no null keys/values
+
+================================================================================
+                         KEY FEATURES
+================================================================================
+
+VISUALIZATION
+-------------
+  - Animated element additions with smooth transitions
+  - Color-coded data types for easy identification:
+      * int      -> Cyan
+      * double   -> Pink
+      * String   -> Green
+      * boolean  -> Yellow
+      * char     -> Purple
+      * Object   -> Orange
+      * null     -> Gray
+  - Visual representation of internal structure:
+      * Array indices and capacity for ArrayList/ArrayDeque
+      * Node connections with arrows for LinkedList
+      * Hash buckets with collision chains for Hash-based structures
+      * Tree hierarchy for TreeSet/TreeMap
+
+MEMORY ANALYSIS
+---------------
+  Click "MEMORY USAGE" button on any structure to see:
+  - Object header overhead (typically 12-16 bytes)
+  - Per-element memory cost
+  - Total memory footprint
+  - Comparison with alternative structures
+  - Visual memory layout diagrams
+
+NULL HANDLING
+-------------
+  The visualizer correctly demonstrates Java's null handling rules:
+  - ArrayList, LinkedList, HashSet, HashMap: allow null
+  - ArrayDeque: does NOT allow null elements
+  - TreeSet, TreeMap: do NOT allow null (without custom Comparator)
+  - Hashtable: does NOT allow null keys or values
+
+================================================================================
+                          REQUIREMENTS
+================================================================================
+
+  - Java 17 or higher (JDK)
+  - Any operating system (Windows, macOS, Linux)
+  - No external dependencies
+
+================================================================================
+                        BUILD & RUN
+================================================================================
+
+WINDOWS
+-------
+  Option 1: Double-click run.bat
+
+  Option 2: Command line
+    > cd java-collection-visualizer
+    > run.bat
+
+MANUAL (Any OS)
+---------------
+  Compile:
+    javac -d out -sourcepath src/main/java \
+      src/main/java/game/Main.java \
+      src/main/java/game/model/*.java \
+      src/main/java/game/ui/*.java
+
+  Run:
+    java -cp out game.Main
+
+================================================================================
+                         USER INTERFACE
+================================================================================
+
+LAYOUT
+------
+  +------------------------------------------------------------------+
+  | LIST: [ArrayList] [LinkedList] [Array]  DEQUE: [ArrayDeque]  ... |
+  +------------------------------------------------------------------+
+  |                                              |                   |
+  |     DATA STRUCTURE VISUALIZATION             |   CONTROL PANEL   |
+  |                                              |                   |
+  |  - Elements displayed with values            |   - Type selector |
+  |  - Internal structure shown                  |   - Value input   |
+  |  - Size/capacity indicators                  |   - Add/Remove    |
+  |  - Memory usage button                       |   - Quick actions |
+  |                                              |   - Method calls  |
+  |                                              |                   |
+  +------------------------------------------------------------------+
+
+NAVIGATION
+----------
+  - Click tabs at top to switch between data structures
+  - Tabs are grouped by category (LIST, DEQUE, SET, MAP, LEGACY)
+  - Each structure has its own color theme
+
+CONTROL PANEL
+-------------
+  Each data structure has appropriate controls:
+
+  Lists:
+    - add(element) - add to end
+    - add(index, element) - insert at position
+    - remove(index) - remove by position
+    - get(index) - retrieve element
+
+  Sets:
+    - add(element) - add if not present
+    - remove(element) - remove if present
+    - contains(element) - check membership
+
+  Maps:
+    - put(key, value) - add/update entry
+    - get(key) - retrieve value
+    - remove(key) - delete entry
+    - containsKey(key) - check key exists
+
+================================================================================
+                       MEMORY COMPARISON
+================================================================================
+
+Storing 10 Integer values:
+
+  Structure              | Memory    | Notes
+  -----------------------+-----------+----------------------------------
+  int[] (primitive)      |    56 B   | Header(16) + 10*4 bytes
+  ArrayList<Integer>     |   200 B   | Object overhead + wrapper objects
+  LinkedList<Integer>    |   432 B   | Node objects (24 bytes each)
+  ArrayDeque<Integer>    |   216 B   | Circular array + wrappers
+  HashSet<Integer>       |   480 B   | Hash table + Entry objects
+  TreeSet<Integer>       |   400 B   | Tree nodes (40 bytes each)
+
+Key insight: Primitive arrays are most memory-efficient, but lack
+flexibility. Choose structure based on access patterns, not just memory.
+
+================================================================================
+                      EDUCATIONAL VALUE
+================================================================================
+
+This tool helps understand:
+
+  1. TIME COMPLEXITY
+     - Why ArrayList has O(1) random access but O(n) insertion
+     - Why LinkedList has O(1) end operations but O(n) random access
+     - Why Hash structures have O(1) average but O(n) worst case
+     - Why Tree structures guarantee O(log n) operations
+
+  2. SPACE COMPLEXITY
+     - Object header overhead in Java
+     - Wrapper object cost (Integer vs int)
+     - Node/Entry object overhead in linked structures
+     - Load factor and capacity in hash tables
+
+  3. INTERNAL MECHANICS
+     - ArrayList capacity growth (1.5x in Java)
+     - LinkedList node structure (prev, element, next)
+     - Hash collision handling (chaining)
+     - Red-Black tree balancing (TreeSet/TreeMap)
+
+  4. PRACTICAL TRADE-OFFS
+     - When to use ArrayList vs LinkedList
+     - HashSet vs TreeSet selection criteria
+     - HashMap vs TreeMap use cases
+     - Legacy Hashtable vs modern alternatives
+
+================================================================================
+                       PROJECT STRUCTURE
+================================================================================
+
+  java-collection-visualizer/
+  |
+  +-- src/main/java/game/
+  |   |
+  |   +-- Main.java                    # Application entry point
+  |   |
+  |   +-- model/                       # Data structure models
+  |   |   +-- VisualArrayList.java
+  |   |   +-- VisualLinkedList.java
+  |   |   +-- VisualArray.java
+  |   |   +-- VisualArrayDeque.java
+  |   |   +-- VisualHashSet.java
+  |   |   +-- VisualLinkedHashSet.java
+  |   |   +-- VisualTreeSet.java
+  |   |   +-- VisualHashMap.java
+  |   |   +-- VisualLinkedHashMap.java
+  |   |   +-- VisualTreeMap.java
+  |   |   +-- VisualHashtable.java
+  |   |   +-- VisualElement.java       # Element wrapper
+  |   |   +-- VisualNode.java          # Linked list node
+  |   |   +-- VisualTreeNode.java      # Tree node
+  |   |   +-- VisualBucket.java        # Hash bucket
+  |   |   +-- VisualEntry.java         # Map entry
+  |   |   +-- DataStructureType.java   # Type enumeration
+  |   |
+  |   +-- ui/                          # User interface
+  |       +-- GameWindow.java          # Main window with tabs
+  |       +-- *Panel.java              # Visualization panels (11)
+  |       +-- *ControlPanel.java       # Control panels (11)
+  |       +-- *MemoryDialog.java       # Memory dialogs (11)
+  |
+  +-- build.bat                        # Windows build script
+  +-- run.bat                          # Windows run script
+  +-- README.md                        # GitHub readme
+  +-- PROJECT.txt                      # This file
+
+================================================================================
+                          SCREENSHOTS
+================================================================================
+
+ArrayList View:
+  +-------+-------+-------+-------+-------+-------+
+  |  42   | 3.14  | "Hi"  | true  |  'A'  |  99   |
+  |  int  |double |String | bool  | char  |  int  |
+  +-------+-------+-------+-------+-------+-------+
+  [###############............] SIZE: 6 / CAPACITY: 10
+
+LinkedList View:
+  [HEAD]-->[42|int]<==>[3.14|dbl]<==>[Hi|str]-->[TAIL]
+
+HashSet View:
+  Bucket[0]: empty
+  Bucket[1]: [42] -> [99]
+  Bucket[2]: ["Hi"]
+  ...
+
+TreeSet View:
+           [42]
+          /    \
+       [15]    [67]
+       /  \      \
+     [8]  [23]  [89]
+
+================================================================================
+                           LICENSE
+================================================================================
+
+MIT License - Feel free to use, modify, and distribute.
+
+================================================================================
+                          CONTRIBUTING
+================================================================================
+
+Contributions welcome! Ideas for improvement:
+
+  - Add more data structures (PriorityQueue, ConcurrentHashMap, etc.)
+  - Add operation animations (sorting, searching)
+  - Add performance benchmarking mode
+  - Add export to image/PDF
+  - Add dark/light theme toggle
+
+To contribute:
+  1. Fork the repository
+  2. Create a feature branch
+  3. Submit a pull request
+
+================================================================================
+                            AUTHOR
+================================================================================
+
+Created as an educational tool for understanding Java Collections Framework.
+
+Visual style inspired by sci-fi games and retro-futuristic interfaces.
+
+================================================================================

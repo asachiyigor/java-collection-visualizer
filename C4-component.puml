@@ -1,0 +1,65 @@
+@startuml C4_Component_Java_Collection_Visualizer
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Component Diagram - Java Collection Visualizer
+
+Container_Boundary(entry, "Entry Point") {
+    Component(main, "Main", "Java Class", "EDT initialization, создание GameWindow")
+}
+
+Container_Boundary(ui_core, "UI Core") {
+    Component(game_window, "GameWindow", "JFrame", "Главное окно с CardLayout навигацией")
+    Component(tab_layout, "TabLayout", "CardLayout", "Переключение между 11 визуализаторами")
+}
+
+Container_Boundary(list_viz, "List Visualizers") {
+    Component(array_panel, "ArrayPanel", "JPanel", "Визуализация ArrayList")
+    Component(array_control, "ControlPanel", "JPanel", "add, remove, get, set, resize")
+    Component(linked_panel, "LinkedListPanel", "JPanel", "Визуализация LinkedList с узлами")
+    Component(linked_control, "LinkedListControlPanel", "JPanel", "addFirst/Last, removeFirst/Last")
+}
+
+Container_Boundary(set_viz, "Set Visualizers") {
+    Component(hashset_panel, "HashSetPanel", "JPanel", "Визуализация HashSet с бакетами")
+    Component(treeset_panel, "TreeSetPanel", "JPanel", "Визуализация TreeSet (BST)")
+}
+
+Container_Boundary(map_viz, "Map Visualizers") {
+    Component(hashmap_panel, "HashMapPanel", "JPanel", "Визуализация HashMap с бакетами")
+    Component(treemap_panel, "TreeMapPanel", "JPanel", "Визуализация TreeMap (RB-Tree)")
+}
+
+Container_Boundary(models, "Visual Models") {
+    Component(visual_arraylist, "VisualArrayList", "Java Class", "ArrayList с tracking capacity")
+    Component(visual_linkedlist, "VisualLinkedList", "Java Class", "LinkedList с VisualNode")
+    Component(visual_hashmap, "VisualHashMap", "Java Class", "HashMap с bucket chains")
+    Component(visual_element, "VisualElement", "Java Class", "Элемент с анимацией: x, y, alpha, scale")
+    Component(visual_node, "VisualNode", "Java Class", "Узел LinkedList: data, next, prev refs")
+    Component(visual_bucket, "VisualBucket", "Java Class", "Хэш-бакет с chain")
+}
+
+Container_Boundary(animation, "Animation Engine") {
+    Component(swing_timer, "Swing Timer", "javax.swing.Timer", "60fps callback (16ms interval)")
+    Component(tweening, "Tweening", "Java", "position, alpha, scale interpolation")
+}
+
+Rel(main, game_window, "creates")
+Rel(game_window, tab_layout, "manages")
+
+Rel(tab_layout, array_panel, "shows")
+Rel(tab_layout, linked_panel, "shows")
+Rel(tab_layout, hashset_panel, "shows")
+Rel(tab_layout, hashmap_panel, "shows")
+
+Rel(array_panel, visual_arraylist, "visualizes")
+Rel(linked_panel, visual_linkedlist, "visualizes")
+Rel(hashmap_panel, visual_hashmap, "visualizes")
+
+Rel(visual_arraylist, visual_element, "contains")
+Rel(visual_linkedlist, visual_node, "contains")
+Rel(visual_hashmap, visual_bucket, "contains")
+
+Rel(swing_timer, array_panel, "triggers repaint")
+Rel(visual_element, tweening, "uses")
+
+@enduml

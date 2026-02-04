@@ -1,0 +1,32 @@
+@startuml C4_Container_Java_Collection_Visualizer
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title C4 Container Diagram - Java Collection Visualizer
+
+Person(user, "Пользователь", "Изучает Java коллекции")
+
+System_Boundary(app, "Java Collection Visualizer") {
+    Container(main_window, "Game Window", "Java Swing JFrame", "Главное окно с TabLayout навигацией")
+    Container(list_panels, "List Visualizers", "Swing JPanels", "ArrayPanel, LinkedListPanel, ArrayDisplayPanel")
+    Container(set_panels, "Set Visualizers", "Swing JPanels", "HashSetPanel, LinkedHashSetPanel, TreeSetPanel")
+    Container(map_panels, "Map Visualizers", "Swing JPanels", "HashMapPanel, LinkedHashMapPanel, TreeMapPanel")
+    Container(deque_panel, "Deque Visualizer", "Swing JPanel", "ArrayDequePanel")
+    Container(legacy_panel, "Legacy Visualizer", "Swing JPanel", "HashtablePanel")
+    Container(models, "Visual Models", "Java Classes", "VisualArrayList, VisualLinkedList, VisualHashMap, etc.")
+    Container(animation, "Animation Engine", "Swing Timer", "60fps рендеринг, tweening анимации")
+    Container(dialogs, "Memory Dialogs", "Swing JDialog", "Детальная информация о памяти")
+}
+
+Rel(user, main_window, "Взаимодействует с UI")
+Rel(main_window, list_panels, "CardLayout переключение")
+Rel(main_window, set_panels, "CardLayout переключение")
+Rel(main_window, map_panels, "CardLayout переключение")
+Rel(main_window, deque_panel, "CardLayout переключение")
+Rel(main_window, legacy_panel, "CardLayout переключение")
+Rel(list_panels, models, "Использует для визуализации")
+Rel(set_panels, models, "Использует для визуализации")
+Rel(map_panels, models, "Использует для визуализации")
+Rel(animation, list_panels, "Timer callbacks")
+Rel(list_panels, dialogs, "Показывает информацию")
+
+@enduml
